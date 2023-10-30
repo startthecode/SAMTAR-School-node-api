@@ -10,6 +10,9 @@ import session from "express-session";
 import cors from "cors";
 import passport from "passport";
 import { passport_config } from "./authorization/passport.js";
+import { login_routes } from "./routes/login_routes.js";
+import { success_message } from "./constant/success_messages.js";
+import { auth } from "./middleware/auth.js";
 
 // create server
 let server = express();
@@ -25,57 +28,36 @@ server.use(
 );
 
 // json excesptions
-server.use(express.urlencoded({ extended: true }));
 server.use(express.json());
+server.use(express.urlencoded({ extended: true }));
 
-// Cors
-// server.use(
-//   cors({
-//     origin: process.env.CLIENT_URL,
-//     credential: true,
-//   })
-// );
+// cors initialize
+server.use(
+  cors({
+    origin: process.env.CLIENT_URL,
+    credential: true,
+  })
+);
 
 //directory
 let __filename = fileURLToPath(import.meta.url);
 let __dirname = path.dirname(__filename);
-console.log(__filename);
-
-//routes - open
-server.use("/students", student_routes);
-server.use("/owners", owner_routes);
-server.use("/teachers", teacher_routes);
 
 //static
 server.use(express.static(__dirname + "/"));
 
-// future delete
-
+// initalize passpost
 passport_config(server);
 
-server.get("/auth/google", function (request, response) {
-  passport.authenticate("google", {
-    scope: ["profile", "email"],
-    state:"asss",
-  })(request, response);
-});
-server.get(
-  "/auth/google/callback",
-  passport.authenticate("google", {
-    failureRedirect: "/login",
-    successRedirect: "/",
-  })
-  // function (req, res) {
-  //   // Successful authentication, redirect home.
-  //   res.redirect("/");
-  // }
-);
+//routes for content
+server.get("/", (req, res) => res.send(req.user || 'welcome'));
+server.use("/students", auth, student_routes);
+server.use("/owners", auth, owner_routes);
+server.use("/teachers", auth, teacher_routes);
+server.use("/login", login_routes);
+server.use("*", (req, res) => res.redirect("/"));
 
-server.get("/", (req, res) => {
-  let rew = req.user;
-  console.log(rew);
-  res.send(req.user);
-});
+// future delete
 
 //start server
 let port = process.env.PORT || 3000;

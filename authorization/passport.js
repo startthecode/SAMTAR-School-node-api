@@ -1,28 +1,11 @@
 import passport from "passport";
 import GoogleStrategy from "passport-google-oauth20";
-import session from "express-session";
 import "dotenv/config";
-
-// let opts = {
-//   jwtFromRequest: cookieExtractor,
-//   secretOrKey: process.env.JWT_SECRET,
-// };
-// var cookieExtractor = function (req) {
-//   var token = null;
-//   if (req && req.cookies) {
-//     token = req.cookies["jwt"];
-//   }
-//   return token;
-// };
-// // ...
-// opts.jwtFromRequest = cookieExtractor;
-
-// passport.use(
-//   new Strategy(opts, (profile, done) => {
-//     if ("golashu60@gmail.com" == jwt_payload.email)
-//       return done(null, { email: "golashu60@gmail.com" });
-//   })
-// );
+import {
+  insert,
+  insert_with_columname,
+  select_by_key,
+} from "../db/mysql_queries.js";
 
 let google_auth = () => {
   passport.use(
@@ -30,30 +13,70 @@ let google_auth = () => {
       {
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: "http://localhost:3200/auth/google/callback",
-        scope: ["profile", "email"],
+        callbackURL: "http://localhost:3000/login/google/callback",
+        scope: [
+          "profile",
+          "email",
+          "https://www.googleapis.com/auth/user.phonenumbers.read",
+        ],
         passReqToCallback: true,
       },
-      function (request,accessToken, refreshToken, profile, cb) {
-        console.log('state: ' + request.query.state);
+      async function (request, accessToken, refreshToken, profile, cb) {
+        try {
+          let user_email = profile?.emails[0]?.value;
+          let user_type = request.query.state;
+          let user_data = profile._json;
+          let user_existance = await select_by_key(
+            user_type,
+            "email",
+            user_email
+          );
 
-        if (true) {
-          return cb(null, { email: "golashu60@gmail.com" });
-        } else {
-          return cb(null, { email: "golashu60@gmail.com" });
+          if (user_existance.length > 0) {
+            return cb(null, {
+              ...user_existance[0],
+              session_for: request.query.state,
+            });
+          }
+          let create_user = await insert_new_user(user_type, user_data);
+          let created_user = create_user;
+          cb(null, {
+            ...created_user,
+            session_for: request.query.state,
+          });
+        } catch (err) {
+          throw err;
         }
+
+        // if(profile?.emails[0]?.value)
       }
     )
   );
 
   passport.serializeUser((profile, done) => {
-    return done(null, profile);
+    return done(null, { ...profile, working: "fine" });
   });
 
   passport.deserializeUser((obj, done) => {
     return done(null, obj);
   });
 };
+
+async function insert_new_user(user_type, data) {
+  console.log("data", data);
+  try {
+    let stundet_table_insert = {
+      first_name: data.given_name,
+      last_name: data.family_name,
+      email: data.email,
+      display_picture: data.picture,
+    };
+    let insert_new_user = await insert(user_type, stundet_table_insert);
+    return stundet_table_insert;
+  } catch (err) {
+    throw err;
+  }
+}
 
 export let passport_config = (app) => {
   app.use(passport.initialize());
