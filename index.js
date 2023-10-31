@@ -50,7 +50,7 @@ server.use(express.static(__dirname + "/"));
 passport_config(server);
 
 //routes for content
-server.get("/", (req, res) => res.send(req.user || 'welcome'));
+server.get("/", (req, res) => res.send(req.user || "welcome"));
 server.use("/students", auth, student_routes);
 server.use("/owners", auth, owner_routes);
 server.use("/teachers", auth, teacher_routes);
@@ -58,6 +58,10 @@ server.use("/login", login_routes);
 server.use("*", (req, res) => res.redirect("/"));
 
 // future delete
+const encodedString =
+  "s%3Amx5ZUaIdlVDwsRKiHtLkMWPNs9ooN06K.BQCjll2fcnJpN%2FVS%2FejGxC6AXcwXQPXX%2BzWDGdTuANM";
+const decodedString = decodeURIComponent(encodedString);
+console.log("Decoded String:", decodedString);
 
 //start server
 let port = process.env.PORT || 3000;

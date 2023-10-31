@@ -6,6 +6,7 @@ import {
   insert_with_columname,
   select_by_key,
 } from "../db/mysql_queries.js";
+import { encryptionKey } from "./cryptoKey.js";
 
 let google_auth = () => {
   passport.use(
@@ -25,7 +26,15 @@ let google_auth = () => {
         try {
           let user_email = profile?.emails[0]?.value;
           let user_type = request.query.state;
-          let user_data = profile._json;
+          let privatekey = encryptionKey(user_email);
+          let user_data = {
+            first_name: profile._json.given_name,
+            last_name: profile._json.family_name,
+            email: profile._json.email,
+            display_picture: profile._json.picture,
+            session_id: privatekey,
+          };
+
           let user_existance = await select_by_key(
             user_type,
             "email",
@@ -34,16 +43,13 @@ let google_auth = () => {
 
           if (user_existance.length > 0) {
             return cb(null, {
-              ...user_existance[0],
+              ...user_data,
               session_for: request.query.state,
             });
           }
           let create_user = await insert_new_user(user_type, user_data);
           let created_user = create_user;
-          cb(null, {
-            ...created_user,
-            session_for: request.query.state,
-          });
+          cb(null, created_user);
         } catch (err) {
           throw err;
         }
@@ -65,14 +71,9 @@ let google_auth = () => {
 async function insert_new_user(user_type, data) {
   console.log("data", data);
   try {
-    let stundet_table_insert = {
-      first_name: data.given_name,
-      last_name: data.family_name,
-      email: data.email,
-      display_picture: data.picture,
-    };
-    let insert_new_user = await insert(user_type, stundet_table_insert);
-    return stundet_table_insert;
+    let privatekey = encryptionKey(data.email);
+    let insert_new_user = await insert(user_type, data);
+    return data;
   } catch (err) {
     throw err;
   }
