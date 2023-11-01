@@ -10,6 +10,7 @@ export const auth = async (req, res, next) => {
         "email",
         user_email
       );
+      console.log(fetchUser[0]?.session_id);
 
       if (user_session_id === fetchUser[0]?.session_id) {
         if (fetchUser[0]?.verification_status === 1) {
@@ -26,8 +27,6 @@ export const auth = async (req, res, next) => {
       "Please Create a new account or login to you existing account"
     );
   } catch (err) {
-    res.send(
-      err.message
-    );
+    res.send(err.message);
   }
 };

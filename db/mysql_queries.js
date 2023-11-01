@@ -24,11 +24,15 @@ export let insert = (table_name, data) => {
   return query(sql, data);
 };
 
+export let update = (table_name, data, key, finding_key) => {
+  let sql = `UPDATE ${table_name} SET ${data} where ${key} = '${finding_key}'`;
+  return query(sql, null);
+};
+
 export let insert_with_columname = (table_name, column_name, data) => {
   let convertToString = Object.values(data)
     .map((val) => `"${val}"`)
     .join(",");
-    console.log(convertToString);
   let sql = `INSERT INTO ${table_name} ${column_name} values (${convertToString})`;
   return query(sql, data);
 };

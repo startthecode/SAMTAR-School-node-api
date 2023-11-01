@@ -13,9 +13,12 @@ import { passport_config } from "./authorization/passport.js";
 import { login_routes } from "./routes/login_routes.js";
 import { success_message } from "./constant/success_messages.js";
 import { auth } from "./middleware/auth.js";
+import flash from "connect-flash";
 
 // create server
 let server = express();
+
+server.use(flash());
 
 // cookie store
 server.use(
@@ -55,13 +58,9 @@ server.use("/students", auth, student_routes);
 server.use("/owners", auth, owner_routes);
 server.use("/teachers", auth, teacher_routes);
 server.use("/login", login_routes);
-server.use("*", (req, res) => res.redirect("/"));
+// server.use("*", (req, res) => res.redirect("/"));
 
 // future delete
-const encodedString =
-  "s%3Amx5ZUaIdlVDwsRKiHtLkMWPNs9ooN06K.BQCjll2fcnJpN%2FVS%2FejGxC6AXcwXQPXX%2BzWDGdTuANM";
-const decodedString = decodeURIComponent(encodedString);
-console.log("Decoded String:", decodedString);
 
 //start server
 let port = process.env.PORT || 3000;

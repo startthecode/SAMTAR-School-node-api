@@ -12,12 +12,17 @@ export let google_login = (passport) =>
   };
 
 export let google_callback = (passport) => {
-  return passport.authenticate("google", {
-    failureRedirect: "/login",
-    successRedirect: "/",
-  });
-  // , function (req, res) {
-  //   // Successful authentication, redirect home.
-  //   res.redirect("/");
-  // }
+  return function (req, res, next) {
+    passport.authenticate("google", {
+      failureRedirect: "/login",
+      failureFlash: true,
+    })(req, res, function (err) {
+      if (err) {
+        // Handle the error here
+        return res.redirect("/login?error=anonymous");
+      }
+      // Successful authentication, redirect home
+      res.redirect("/");
+    });
+  };
 };
