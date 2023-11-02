@@ -1,6 +1,6 @@
 import crypto from "crypto";
 
-const secretKey = process.env.SECRET_KEY_CRYPTO; // Replace with your actual shared secret key
+const secretKey = crypto.randomBytes(32).toString("hex"); // Replace with your actual shared secret key
 export const encryptionKey = (unique_value) =>
   crypto
     .createHash("sha256")

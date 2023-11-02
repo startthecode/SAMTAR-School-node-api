@@ -24,15 +24,22 @@ export let insert = (table_name, data) => {
   return query(sql, data);
 };
 
-export let update = (table_name, data, key, finding_key) => {
-  let sql = `UPDATE ${table_name} SET ${data} where ${key} = '${finding_key}'`;
-  return query(sql, null);
-};
-
-export let insert_with_columname = (table_name, column_name, data) => {
-  let convertToString = Object.values(data)
-    .map((val) => `"${val}"`)
-    .join(",");
-  let sql = `INSERT INTO ${table_name} ${column_name} values (${convertToString})`;
+export let update = (table_name, data, condition) => {
+  let whereCondition = "";
+  for (const key in condition) {
+    if (condition.hasOwnProperty(key))
+      whereCondition += ` ${key} =  '${condition[key]}' AND `;
+  }
+  whereCondition = whereCondition.slice(0, -5);
+  console.log(whereCondition);
+  let sql = `UPDATE ${table_name} SET ? where ${whereCondition}`;
   return query(sql, data);
 };
+
+// export let insert_with_columname = (table_name, column_name, data) => {
+//   let convertToString = Object.values(data)
+//     .map((val) => `"${val}"`)
+//     .join(",");
+//   let sql = `INSERT INTO ${table_name} ${column_name} values (${convertToString})`;
+//   return query(sql, data);
+// };

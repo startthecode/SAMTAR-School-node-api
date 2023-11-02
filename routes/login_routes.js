@@ -4,9 +4,10 @@ import {
   google_login,
 } from "../controller/login_controller.js";
 import passport from "passport";
+import { redirectIfLoggedIn } from "../middleware/redirectIfLoggedIn.js";
 
 let router = express.Router();
 
 export let login_routes = router
-  .get("/google", google_login(passport))
-  .get("/google/callback", google_callback(passport));
+  .get("/google", redirectIfLoggedIn, google_login(passport))
+  .get("/google/callback", redirectIfLoggedIn, google_callback(passport));

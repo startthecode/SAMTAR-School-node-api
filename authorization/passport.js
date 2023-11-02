@@ -1,12 +1,7 @@
 import passport from "passport";
 import GoogleStrategy from "passport-google-oauth20";
 import "dotenv/config";
-import {
-  insert,
-  insert_with_columname,
-  select_by_key,
-  update,
-} from "../db/mysql_queries.js";
+import { insert, select_by_key, update } from "../db/mysql_queries.js";
 import { encryptionKey } from "./cryptoKey.js";
 
 let google_auth = () => {
@@ -49,32 +44,24 @@ let google_auth = () => {
               session_for: request.query.state,
             });
           }
-          let create_user = await insert_new_user(user_type, user_data);
-          let created_user = create_user;
-          cb(null, created_user);
+          if (user_type !== "owners") {
+            await insert(user_type, user_data);
+            return cb(null, { ...user_data, session_for: request.query.state });
+          }
+          return cb("No account exists", null);
         } catch (err) {
-          cb(err, null);
+          return cb(err, null);
         }
-
-        // if(profile?.emails[0]?.value)
       }
     )
   );
 
-  //insert
-  async function insert_new_user(user_type, data) {
-    console.log("data", data);
-    try {
-      let privatekey = encryptionKey(data.email);
-      let insert_new_user = await insert(user_type, data);
-      return data;
-    } catch (err) {
-      throw err;
-    }
-  }
+  // Insert
+
   async function update_users_sessionID(user_type, session_id, email) {
-    let data = `last_login = NOW(),session_id = '${session_id}'`;
-    let update_sessionID = await update(user_type, data, "email", email);
+    let NOW = () => new Date();
+    let data = { session_id: session_id, last_login: NOW() };
+    let update_sessionID = await update(user_type, data, { email: email });
     return update_sessionID;
   }
 

@@ -10,14 +10,13 @@ export const auth = async (req, res, next) => {
         "email",
         user_email
       );
-      console.log(fetchUser[0]?.session_id);
 
       if (user_session_id === fetchUser[0]?.session_id) {
         if (fetchUser[0]?.verification_status === 1) {
           return next();
         } else {
           return res.send(
-            "Your is under verification mode. Please wait for your account to be verified"
+            "Your account is under verification mode. Please wait for your account to be verified"
           );
         }
       }

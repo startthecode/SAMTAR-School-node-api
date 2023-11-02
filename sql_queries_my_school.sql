@@ -55,26 +55,35 @@ unique index `mq_phone` (`phone` asc)
 
 create table posts(
 post_id int auto_increment primary key not null,
-title varchar(100),
+title varchar(100) not null,
 description varchar(255),
 content text not null,
 seo_title varchar(100) default null,
 created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 seo_description varchar(255) default null,
 featured_image varchar(100),
-author_type enum("teacher","student","owner") not null,
-foreign key (authorid) references teachers(teacher_id),
+author_type enum("teachers","students","owners") not null,
 authorid int not null
 );
+drop table posts;
+
+alter table posts modify
+author_type enum("teachers","students","owners") not null;
+alter table posts modify
+title varchar(100) not null;	
 
 alter table teachers modify phone varchar(20);
 alter table owners modify phone varchar(20);
+alter table posts drop foreign key authorid;
 
 
+ALTER TABLE posts
+DROP FOREIGN KEY authorid;
+
+-- ('John', 'Doe', '2000-01-01', 'Male', '123 Street, City', '1234567890', 'john.doe@example.com', 'path_to_display_picture', 'Description for John Doe'),
 -- Sample data for the students table
-INSERT INTO students (first_name, last_name, date_of_birth, gender, address, phone_number, email, display_picture, description, password) VALUES
-('John', 'Doe', '2000-01-01', 'Male', '123 Street, City', '1234567890', 'john.doe@example.com', 'path_to_display_picture', 'Description for John Doe', 'password123'),
-('Jane', 'Smith', '1999-05-05', 'Female', '456 Avenue, Town', '9876543210', 'jane.smith@example.com', 'path_to_display_picture', 'Description for Jane Smith', 'password456');
+INSERT INTO students (first_name, last_name, email, display_picture) VALUES
+('Jane', 'Smith', 'symon.smith@example.scom', 'path_to_display_picture');
 
 -- Sample data for the teachers table
 INSERT INTO teachers (teacher_id, first_name, last_name, dob, gender, address, password, display_picture, descriptions, email, phone) VALUES
@@ -88,11 +97,68 @@ INSERT INTO owners (first_name, last_name, dob, address, password, profile_pictu
 
 -- Sample data for the posts table
 INSERT INTO posts (title, description, content, seo_title, seo_description, featured_image, author_type, authorid) VALUES
-('Post Title 1', 'Description for Post 1', 'Content for Post 1', 'SEO Title for Post 1', 'SEO Description for Post 1', 'path_to_featured_image_1', 'teacher', 1),
-('Post Title 2', 'Description for Post 2', 'Content for Post 2', 'SEO Title for Post 2', 'SEO Description for Post 2', 'path_to_featured_image_2', 'student', 1);
+('Post Title 1', 'Description for Post 1', 'Content for Post 1', 'SEO Title for Post 1', 'SEO Description for Post 1', 'path_to_featured_image_1', 'teachers', 1),
+('Post Title 2', 'Description for Post 2', 'Content for Post 2', 'SEO Title for Post 2', 'SEO Description for Post 2', 'path_to_featured_image_2', 'students', 1);
 
 
 
+INSERT INTO students (first_name, last_name, date_of_birth, gender, address, phone_number, email, display_picture, description, password) VALUES
+('John', 'Doe', '2000-01-01', 'Male', '123 Street, City', '9650173941', 'golashu60@gmail.com', 'path_to_display_picture', 'Description for John Doe', 'password123');
+
+alter table students 
+drop column password ;
+
+alter table students
+modify student_id int auto_increment;
+
+alter table students
+modify verification_status bool default false;
+
+alter table students
+add privatekey varchar(80) default null;
+
+alter table teachers
+rename column sessionID to session_id;
+alter table students
+rename column sessionID to session_id;
+
+alter table teachers
+add last_login datetime default null;
+
+alter table teachers
+modify column teacher_id int auto_increment,
+modify column gender enum("male","female","other"),
+modify column phone varchar(20) default null
+;
+
+alter table teachers
+drop password;
+
+alter table teachers
+add verification_status bool default false;
+
+create table emails(
+id int primary key auto_increment,
+email varchar(50) unique
+);
+
+alter table emails
+modify email varchar(50) unique;
+
+create trigger insert_on_insert
+before insert on teachers
+for each row
+insert into emails(email) values(new.email);
+
+create trigger insert_on_insert_on_students
+before insert on students
+for each row
+insert into emails(email) values(new.email);
+
+create trigger delete_on_delete_email
+after delete on students
+for each row
+delete from emails where email = old.email;
 
 
 
@@ -100,3 +166,7 @@ select * from owners;
 select * from students;
 select * from teachers;
 select * from posts; 
+select * from emails; 
+
+
+

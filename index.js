@@ -11,9 +11,9 @@ import cors from "cors";
 import passport from "passport";
 import { passport_config } from "./authorization/passport.js";
 import { login_routes } from "./routes/login_routes.js";
-import { success_message } from "./constant/success_messages.js";
 import { auth } from "./middleware/auth.js";
 import flash from "connect-flash";
+import { post_routes } from "./routes/posts_routes.js";
 
 // create server
 let server = express();
@@ -53,11 +53,17 @@ server.use(express.static(__dirname + "/"));
 passport_config(server);
 
 //routes for content
-server.get("/", (req, res) => res.send(req.user || "welcome"));
+server.get("/", (req, res) =>
+  res.send(
+    req.user ||
+      `<a href="http://localhost:3000/login/google?loginfor=students">students</a> <br><br> <a href="http://localhost:3000/login/google?loginfor=teachers">teachers</a>`
+  )
+);
 server.use("/students", auth, student_routes);
 server.use("/owners", auth, owner_routes);
 server.use("/teachers", auth, teacher_routes);
 server.use("/login", login_routes);
+server.use("/posts", auth, post_routes);
 // server.use("*", (req, res) => res.redirect("/"));
 
 // future delete
