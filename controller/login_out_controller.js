@@ -24,7 +24,14 @@ export let google_callback = (passport) => {
         );
         return res.redirect(`${returnUrl}?error=${response_err}`);
       }
-      res.redirect("/");
+      return res.redirect(returnUrl);
     });
   };
+};
+
+export let logout = (req, res) => {
+  req.logout((err) => {
+    if (err) return res.send(error_message.google_logout_failure);
+    res.redirect(process.env.CLIENT_URL);
+  });
 };

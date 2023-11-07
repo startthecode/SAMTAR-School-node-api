@@ -2,30 +2,25 @@ import express from "express";
 import { fileURLToPath } from "url";
 import path from "path";
 import "dotenv/config";
-import { student_routes } from "./routes/student_routes.js";
-import db from "./db/mysql.js";
-import { owner_routes } from "./routes/owner_routes.js";
-import { teacher_routes } from "./routes/teacher_routes.js";
 import session from "express-session";
 import cors from "cors";
-import passport from "passport";
 import { passport_config } from "./authorization/passport.js";
-import { login_routes } from "./routes/login_routes.js";
-import { auth } from "./middleware/auth.js";
-import flash from "connect-flash";
-import { post_routes } from "./routes/posts_routes.js";
+import MySQLStoreImport from "express-mysql-session";
+import { db_details } from "./db/mysql.js";
+import { all_routes } from "./routes/all_routes.js";
 
 // create server
 let server = express();
 
-server.use(flash());
-
-// cookie store
+// cookie store using mysql database
+const MySQLStore = MySQLStoreImport(session);
+const sessionStore = new MySQLStore(db_details);
 server.use(
   session({
     secret: process.env.secret,
     resave: false,
     saveUninitialized: true,
+    store: sessionStore,
     cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 },
   })
 );
@@ -38,7 +33,7 @@ server.use(express.urlencoded({ extended: true }));
 server.use(
   cors({
     origin: process.env.CLIENT_URL,
-    credential: true,
+    credentials: true,
   })
 );
 
@@ -46,27 +41,18 @@ server.use(
 let __filename = fileURLToPath(import.meta.url);
 let __dirname = path.dirname(__filename);
 
-//static
+//static path
 server.use(express.static(__dirname + "/"));
 
 // initalize passpost
 passport_config(server);
 
-//routes for content
-server.get("/", (req, res) =>
-  res.send(
-    req.user ||
-      `<a href="http://localhost:3000/login/google?loginfor=students">students</a> <br><br> <a href="http://localhost:3000/login/google?loginfor=teachers">teachers</a>`
-  )
-);
-server.use("/students", auth, student_routes);
-server.use("/owners", auth, owner_routes);
-server.use("/teachers", auth, teacher_routes);
-server.use("/login", login_routes);
-server.use("/posts", auth, post_routes);
-// server.use("*", (req, res) => res.redirect("/"));
+//routes
+all_routes(server);
 
-// future delete
+// //code for dev mode start
+
+// //code for dev mode end
 
 //start server
 let port = process.env.PORT || 3000;

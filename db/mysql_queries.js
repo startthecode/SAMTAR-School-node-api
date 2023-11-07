@@ -25,14 +25,14 @@ export let insert = (table_name, data) => {
 };
 
 export let update = (table_name, data, condition) => {
-  let whereCondition = "";
-  for (const key in condition) {
-    if (condition.hasOwnProperty(key))
-      whereCondition += ` ${key} =  '${condition[key]}' AND `;
-  }
-  whereCondition = whereCondition.slice(0, -5);
-  console.log(whereCondition);
-  let sql = `UPDATE ${table_name} SET ? where ${whereCondition}`;
+  // let whereCondition = "";
+  // for (const key in condition) {
+  //   if (condition.hasOwnProperty(key))
+  //     whereCondition += ` ${key} =  '${condition[key]}' AND `;
+  // }
+  // whereCondition = whereCondition.slice(0, -5);
+  let sql = `UPDATE ${table_name} SET ? where ${condition}`;
+  console.log(table_name, data, condition);
   return query(sql, data);
 };
 

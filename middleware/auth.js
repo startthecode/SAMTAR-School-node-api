@@ -5,14 +5,20 @@ export const auth = async (req, res, next) => {
     if (req?.user?.email) {
       let user_email = req.user.email;
       let user_session_id = req.user.session_id;
+      let user_id = req.user.user_id;
+      let user_type = req.user.session_for;
+
       let fetchUser = await select_by_key(
         req?.user?.session_for,
         "email",
         user_email
       );
 
-      if (user_session_id === fetchUser[0]?.session_id) {
-        if (fetchUser[0]?.verification_status === 1) {
+      if (
+        user_session_id === fetchUser[0]?.session_id &&
+        user_id === fetchUser[0]?.id
+      ) {
+        if (fetchUser[0]?.verification_status === 1 || user_type === "owners") {
           return next();
         } else {
           return res.send(

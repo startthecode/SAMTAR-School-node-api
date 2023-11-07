@@ -37,16 +37,23 @@ let google_auth = () => {
             user_email
           );
 
+          console.log(user_existance,user_existance.length > 0,request.query.state);
           if (user_existance.length > 0) {
             await update_users_sessionID(user_type, privatekey, user_email);
             return cb(null, {
               ...user_data,
+              user_id: user_existance[0].id,
               session_for: request.query.state,
             });
           }
           if (user_type !== "owners") {
-            await insert(user_type, user_data);
-            return cb(null, { ...user_data, session_for: request.query.state });
+            let new_user = await insert(user_type, user_data);
+            let new_user_cookie = {
+              ...user_data,
+              session_for: request.query.state,
+              user_id: new_user[0].id,
+            };
+            return cb(null, new_user_cookie);
           }
           return cb("No account exists", null);
         } catch (err) {
@@ -61,7 +68,7 @@ let google_auth = () => {
   async function update_users_sessionID(user_type, session_id, email) {
     let NOW = () => new Date();
     let data = { session_id: session_id, last_login: NOW() };
-    let update_sessionID = await update(user_type, data, { email: email });
+    let update_sessionID = await update(user_type, data, `email = '${email}'`);
     return update_sessionID;
   }
 
