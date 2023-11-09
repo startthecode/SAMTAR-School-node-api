@@ -14,8 +14,9 @@ export let selectAll = (tableName) => {
   return query(sql, null);
 };
 
-export let select_by_key = (tableName, key, finding_key) => {
-  let sql = `SELECT * FROM ${tableName} WHERE ${key} = '${finding_key}'`;
+export let select_by_key = (tableName, select, condition) => {
+  let sql = `SELECT ${select} FROM ${tableName} where ${condition}`;
+  console.log(tableName, select, condition);
   return query(sql, null);
 };
 

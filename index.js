@@ -32,7 +32,6 @@ server.use(express.urlencoded({ extended: true }));
 // cors initialize
 server.use(
   cors({
-    origin: process.env.CLIENT_URL,
     credentials: true,
   })
 );

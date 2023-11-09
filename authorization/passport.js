@@ -31,13 +31,15 @@ let google_auth = () => {
             session_id: privatekey,
           };
 
-          let user_existance = await select_by_key(
-            user_type,
-            "email",
-            user_email
-          );
+          let condition = `email = '${user_email}'`;
 
-          console.log(user_existance,user_existance.length > 0,request.query.state);
+          let user_existance = await select_by_key(user_type, "*", condition);
+
+          console.log(
+            user_existance,
+            user_existance.length > 0,
+            request.query.state
+          );
           if (user_existance.length > 0) {
             await update_users_sessionID(user_type, privatekey, user_email);
             return cb(null, {

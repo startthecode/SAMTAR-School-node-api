@@ -7,11 +7,12 @@ export const auth = async (req, res, next) => {
       let user_session_id = req.user.session_id;
       let user_id = req.user.user_id;
       let user_type = req.user.session_for;
+      let condition = `email='${user_email}'`;
 
       let fetchUser = await select_by_key(
         req?.user?.session_for,
-        "email",
-        user_email
+        "*",
+        condition
       );
 
       if (

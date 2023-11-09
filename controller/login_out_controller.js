@@ -16,7 +16,6 @@ export let google_login = (passport) =>
 export let google_callback = (passport) => {
   return function (req, res, next) {
     let returnUrl = req.session.returnUrl;
-    delete req.session.returnUrl;
     passport.authenticate("google")(req, res, function (err) {
       if (err) {
         let response_err = encodeURIComponent(
@@ -31,7 +30,10 @@ export let google_callback = (passport) => {
 
 export let logout = (req, res) => {
   req.logout((err) => {
+    let returnUrl = req.session.returnUrl;
+    delete req.session.returnUrl;
     if (err) return res.send(error_message.google_logout_failure);
-    res.redirect(process.env.CLIENT_URL);
+    console.log(returnUrl)
+    res.redirect(returnUrl);
   });
 };

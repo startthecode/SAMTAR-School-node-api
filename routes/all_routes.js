@@ -1,4 +1,5 @@
 import { auth } from "../middleware/auth.js";
+import { courses_routes } from "./courses_routes.js";
 import { login_routes } from "./login_routes.js";
 import { logout_routes } from "./logout_routes.js";
 import { owner_routes } from "./owner_routes.js";
@@ -24,5 +25,11 @@ export const all_routes = (server) => {
   server.use("/login", login_routes);
   server.use("/logout", logout_routes);
   server.use("/posts", auth, post_routes);
+  server.use("/courses", auth, courses_routes);
+  server.use("/userInfo", auth, (req, res) => {
+    if (req.user) res.send(req.user);
+    res.send("login first");
+  });
+
   // server.use("*", (req, res) => res.redirect("/"));
 };
