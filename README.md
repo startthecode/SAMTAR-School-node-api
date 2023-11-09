@@ -1,64 +1,57 @@
-**SAMTAR school**
-The School API is designed to facilitate easy management of student, teacher, principals, posts and course information within a school environment. 
-It allows for easy retrieval, updating, and deletion of data related to the school's operations.
+SAMTAR School API
+The SAMTAR School API simplifies the management of student, teacher, principal, posts, and course information within a school environment. This API allows easy access to various functionalities necessary for efficient school operations.
 
-**Installation**
-To get started with the SAMTAR school API, follow the steps below:
-1. git clone https://github.com/startthecode/SAMTAR-School-node-api.git
-2. npm install
+Installation
+To begin using the SAMTAR School API, follow these steps:
 
-**Usage**
-Once the installation is complete, start the server using the following command:
-4. npm run dev / npm start
+Clone the repository: git clone https://github.com/startthecode/SAMTAR-School-node-api.git
+Install the necessary dependencies: npm install
+Usage
+After completing the installation, start the server using the command: npm run dev or npm start
 
+Routes
+Here is a list of the available routes along with their functionalities:
 
-**Routes**
-List of available routes and their functionalities:
+Posts Routes:
 
-1. Posts Routes:
-- GET /posts/all: Get all posts.
-- POST /posts/add: Create a new post.
-- PATCH /posts/edit: Edit an existing post.
+GET /posts/all: Retrieve all posts.
+POST /posts/add: Create a new post.
+PATCH /posts/edit: Modify an existing post.
+Owners Routes:
 
-2. Owners Routes:
-- GET /owners/all: Get all owners.
-
-- GET /owners/alluser/:user_type: Get all unverified users by type.
-
+GET /owners/all: Retrieve all owners.
+GET /owners/alluser/:user_type: Obtain all unverified users by type.
 PATCH /owners/updateuser: Update user verification status.
+Teachers Routes:
 
-4. Teachers Routes:
-- GET /teachers: Get all teachers.
+GET /teachers: Retrieve all teachers.
+Login Routes:
 
-5. Login Routes:
-- GET /login/google: Initiate a Google login.
-- GET /login/google/callback: Handle the Google login callback.
+GET /login/google: Initiate a Google login.
+GET /login/google/callback: Handle the Google login callback.
+Logout Routes:
 
-6. Logout Routes:
-- GET /logout/google: Logout the user.
+GET /logout/google: Logout the user.
+Courses Routes:
 
-7. Courses Routes:
-- GET /courses/all: Get all courses.
-- POST /courses/add: Create a new course.
-- PATCH /courses/edit: Edit an existing course.
+GET /courses/all: Retrieve all courses.
+POST /courses/add: Create a new course.
+PATCH /courses/edit: Modify an existing course.
+Logged-In User Information Routes:
 
-8. Logged-In User Information Routes:
-- GET /userInfo: Get the logged-in user information.
+GET /userInfo: Retrieve information about the logged-in user.
+Middleware
+The SAMTAR School API uses the following middleware to ensure secure and controlled access:
 
+Auth Middleware:
 
-**Middleware**
-1. Auth Middleware
-The isAuthenticated middleware function checks if the user is logged in. If the user is not logged in, it returns a 401 Unauthorized status.
+The isAuthenticated middleware function checks if the user is logged in and returns a 401 Unauthorized status if the user is not logged in.
+Check User Role Middleware:
 
-2. Check User Role Middleware
-The checkUserRole middleware function verifies if the user's role is valid. It allows access to certain routes based on the user's role. If the user's role does not match the specified roles, it returns a 403 Forbidden status.
+The checkUserRole middleware function verifies the user's role and allows access to specific routes based on the user's role. It returns a 403 Forbidden status if the user's role does not match the specified roles.
+Redirect If Logged In Middleware:
 
-3. Redirect If Logged In Middleware
-The redirectIfLoggedIn middleware function redirects the user to the home page if they are already logged in. If the user is not logged in, the middleware allows them to continue.
+The redirectIfLoggedIn middleware function redirects the user to the home page if they are already logged in. It allows users to continue if they are not logged in.
+Redirect If Not Logged In Middleware:
 
-4. Redirect If Not Logged In Middleware
 The redirectIfLoggedOut middleware function redirects the user to the login page if they are not logged in. If the user is already logged in, the middleware allows them to continue.
-
-
-
-
