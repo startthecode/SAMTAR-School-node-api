@@ -16,9 +16,9 @@ Once the installation is complete, start the server using the following command:
 List of available routes and their functionalities:
 
 1. Posts Routes:
-GET /posts/all: Get all posts.
-POST /posts/add: Create a new post.
-PATCH /posts/edit: Edit an existing post.
+- GET /posts/all: Get all posts.
+- POST /posts/add: Create a new post.
+- PATCH /posts/edit: Edit an existing post.
 
 2. Owners Routes:
 GET /owners/all: Get all owners.
