@@ -10,12 +10,7 @@ import { teacher_routes } from "./teacher_routes.js";
 export const all_routes = (server) => {
   //code for dev mode start
   server.get("/", (req, res) =>
-    res.send(
-      req.user ||
-        `<a href="http://localhost:3000/login/google?loginfor=students">students</a> <br><br> <a href="http://localhost:3000/login/google?loginfor=teachers">teachers</a>
-      <br><br> <a href="http://localhost:3000/login/google?loginfor=owners">Owners</a>
-      `
-    )
+ res.send('Welcome to SAMTAR School API')
   );
   //code for dev mode end
 
