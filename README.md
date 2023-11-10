@@ -58,5 +58,10 @@ The redirectIfLoggedIn middleware function redirects the user to the home page i
 The redirectIfLoggedOut middleware function redirects the user to the login page if they are not logged in. If the user is already logged in, the middleware allows them to continue.
 
 
+**Extra Info**
+- server - Render
+- Database - google clould
+
+
 
 
